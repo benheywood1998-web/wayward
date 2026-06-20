@@ -20,7 +20,7 @@ body{
   color:white;
   text-align:center;
   margin:0;
-  padding:24px 16px 50px;
+  padding:24px 16px 40px;
 }
 
 h1{
@@ -34,16 +34,18 @@ h1{
   margin-top:8px;
   margin-bottom:28px;
   color:#9aa4b2;
-  font-size:12px;
+  font-size:13px;
 }
 
 button{
+  width:100%;
+  max-width:420px;
   background:white;
   color:black;
   border:none;
   border-radius:16px;
-  padding:14px 26px;
-  font-size:16px;
+  padding:16px 24px;
+  font-size:18px;
   font-weight:700;
   cursor:pointer;
   transition:0.2s;
@@ -54,8 +56,8 @@ button:hover{
 }
 
 .card{
-  max-width:720px;
-  margin:24px auto 15px;
+  max-width:700px;
+  margin:24px auto 12px;
   border-radius:28px;
   padding:28px 22px;
   min-height:320px;
@@ -67,7 +69,6 @@ button:hover{
   box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
 
-/* Card colors */
 .group{
   background:#7c3aed;
 }
@@ -80,81 +81,62 @@ button:hover{
   background:#ea580c;
 }
 
-/* NEW: card type section */
-.card-top{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-  margin-bottom:18px;
-}
-
 .type{
   font-size:14px;
   font-weight:900;
   letter-spacing:2px;
   text-transform:uppercase;
   opacity:0.95;
-  background:rgba(0,0,0,0.25);
-  padding:6px 12px;
-  border-radius:999px;
 }
 
 .instructions{
-  font-size:13px;
-  opacity:0.85;
-  max-width:90%;
-  line-height:1.4;
+  margin-top:6px;
+  font-size:12px;
+  opacity:0.75;
+  line-height:1.3;
 }
 
-/* divider for clarity */
 .divider{
-  width:60%;
   height:1px;
   background:rgba(255,255,255,0.25);
-  margin:10px auto 0;
+  margin:18px auto 0;
+  width:60%;
 }
 
-/* Task emphasis */
 .task{
-  font-size:36px;
+  font-size:38px;
   font-weight:900;
   line-height:1.2;
-  margin-top:18px;
-  padding-top:18px;
-}
-
-.placeholder{
-  color:#d1d5db;
-  font-size:28px;
-  font-weight:700;
+  margin-top:22px;
+  padding:18px;
+  background:rgba(255,255,255,0.12);
+  border-radius:18px;
+  backdrop-filter:blur(6px);
 }
 
 #remaining{
-  font-size:13px;
+  font-size:12px;
   color:#8b949e;
   margin-top:10px;
 }
 
-/* Mobile tweaks */
-@media (max-width:600px){
+.placeholder{
+  color:#d1d5db;
+  background:transparent;
+}
 
-  h1{
-    font-size:36px;
-  }
+@media (max-width: 600px){
 
-  .task{
-    font-size:28px;
-  }
+  h1{ font-size:36px; }
+
+  .task{ font-size:30px; }
 
   .card{
-    padding:22px 16px;
+    padding:22px 18px;
     min-height:280px;
   }
 
-  button{
-    width:100%;
-  }
+  button{ font-size:16px; }
 
 }
 
@@ -169,21 +151,14 @@ button:hover{
 A silly game for silly people and Ben.
 </p>
 
-<button onclick="drawCard()">
-Draw Card
-</button>
+<button onclick="drawCard()">Draw Card</button>
 
 <div id="card" class="card">
 
-  <div class="card-top">
+  <div id="type" class="type"></div>
+  <div id="instructions" class="instructions"></div>
 
-    <div id="type" class="type"></div>
-
-    <div id="instructions" class="instructions"></div>
-
-    <div class="divider"></div>
-
-  </div>
+  <div class="divider"></div>
 
   <div id="task" class="task placeholder">
     Press Draw Card
@@ -191,9 +166,7 @@ Draw Card
 
 </div>
 
-<div id="remaining">
-Loading cards...
-</div>
+<div id="remaining">Loading cards...</div>
 
 <script>
 
@@ -205,37 +178,25 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyChplToswSaLr6B4te3228
 fetch(API_URL)
   .then(response => response.json())
   .then(data => {
-
     cards = data;
     remainingCards = [...cards];
-
     updateRemainingCount();
-
   })
   .catch(error => {
-
     console.error(error);
-
-    document.getElementById("remaining").innerText =
-      "Failed to load cards";
-
+    document.getElementById("remaining").innerText = "Failed to load cards";
   });
 
 function updateRemainingCount() {
-
   document.getElementById("remaining").innerText =
     remainingCards.length + " cards remaining";
-
 }
 
 function drawCard() {
 
   if (remainingCards.length === 0) {
-
     alert("Deck complete! Reshuffling...");
-
     remainingCards = [...cards];
-
   }
 
   const randomIndex =
@@ -247,16 +208,12 @@ function drawCard() {
   const cardElement =
     document.getElementById("card");
 
-  cardElement.classList.remove(
-    "group",
-    "individual",
-    "secret"
-  );
+  cardElement.classList.remove("group","individual","secret");
 
-  const type =
-    card.type.toLowerCase();
+  const type = (card.type || "").toLowerCase();
 
-  if (type.includes("group")) {
+  // UPDATED MAPPING FOR NEW SPREADSHEET VALUES
+  if (type.includes("gang")) {
 
     cardElement.classList.add("group");
 
@@ -264,23 +221,11 @@ function drawCard() {
       "GANG RULE";
 
     document.getElementById("instructions").innerText =
-      "Read this out loud. Everyone in the group must complete this task";
+      "Read this out loud. Everyone in the group must complete this task.";
 
   }
 
-  else if (type.includes("secret")) {
-
-    cardElement.classList.add("secret");
-
-    document.getElementById("type").innerText =
-      "SIDE QUEST";
-
-    document.getElementById("instructions").innerText =
-      "Keep this to yourself. Complete this task whenever you feel the time is right";
-
-  }
-
-  else {
+  else if (type.includes("solo")) {
 
     cardElement.classList.add("individual");
 
@@ -288,19 +233,40 @@ function drawCard() {
       "SOLO MISSION";
 
     document.getElementById("instructions").innerText =
-      "Read this out loud. Only the reader must complete this task";
+      "Read this out loud. Only the reader must complete this task.";
 
+  }
+
+  else if (type.includes("side")) {
+
+    cardElement.classList.add("secret");
+
+    document.getElementById("type").innerText =
+      "SIDE QUEST";
+
+    document.getElementById("instructions").innerText =
+      "Keep this to yourself. Complete this task whenever you feel the time is right.";
+
+  }
+
+  else {
+
+    // fallback in case spreadsheet has unexpected values
+    cardElement.classList.add("individual");
+
+    document.getElementById("type").innerText =
+      card.type || "UNKNOWN";
+
+    document.getElementById("instructions").innerText =
+      "";
   }
 
   document.getElementById("task").innerText =
     card.task;
 
-  document.getElementById("task").classList.remove(
-    "placeholder"
-  );
+  document.getElementById("task").classList.remove("placeholder");
 
   updateRemainingCount();
-
 }
 
 </script>
