@@ -3,24 +3,29 @@
 <head>
 <meta charset="UTF-8">
 
-<title>Party Cards</title>
+<title>Wayward</title>
 
 <style>
 
 body{
-  font-family:Arial;
+  font-family: Arial, sans-serif;
   text-align:center;
   padding:30px;
   background:#111;
   color:white;
+  max-width:800px;
+  margin:auto;
 }
 
-.card{
-  margin-top:30px;
-  padding:30px;
-  border-radius:20px;
-  background:#222;
-  min-height:200px;
+h1{
+  margin-bottom:10px;
+}
+
+.subtitle{
+  margin-top:0;
+  margin-bottom:30px;
+  opacity:0.8;
+  font-style:italic;
 }
 
 button{
@@ -28,6 +33,22 @@ button{
   font-size:20px;
   border:none;
   border-radius:10px;
+  cursor:pointer;
+}
+
+#remaining{
+  margin-top:20px;
+  margin-bottom:20px;
+  font-size:18px;
+  opacity:0.8;
+}
+
+.card{
+  margin-top:20px;
+  padding:30px;
+  border-radius:20px;
+  background:#222;
+  min-height:200px;
 }
 
 .type{
@@ -38,6 +59,7 @@ button{
 
 .task{
   font-size:24px;
+  line-height:1.4;
 }
 
 </style>
@@ -45,19 +67,27 @@ button{
 
 <body>
 
-<h1>Party Cards</h1>
+<h1>Wayward</h1>
+
+<p class="subtitle">
+A silly game for silly people and Ben
+</p>
 
 <button onclick="drawCard()">
 Draw Card
 </button>
 
+<p id="remaining">
+Loading cards...
+</p>
+
 <div class="card">
 
-<div id="type" class="type"></div>
+  <div id="type" class="type"></div>
 
-<div id="task" class="task">
-Press Draw Card
-</div>
+  <div id="task" class="task">
+    Press Draw Card
+  </div>
 
 </div>
 
@@ -69,45 +99,57 @@ let remainingCards = [];
 const API_URL = "https://script.google.com/macros/s/AKfycbyChplToswSaLr6B4te3228by7JS-7Ek9DOMri7Bl9c0SVbRyyhVjG_KZLpXjH0aSpc/exec";
 
 fetch(API_URL)
-  .then(r => r.json())
+  .then(response => response.json())
   .then(data => {
 
     cards = data;
     remainingCards = [...cards];
 
-    document.getElementById("remaining").innerText =
-      "Cards Remaining: " + remainingCards.length;
+    updateRemainingCount();
 
     console.log("Loaded", cards.length, "cards");
 
   })
-  .catch(err => {
-    console.error("Failed to load cards:", err);
+  .catch(error => {
+
+    console.error(error);
+
+    document.getElementById("remaining").innerText =
+      "Failed to load cards";
+
   });
+
+function updateRemainingCount() {
+
+  document.getElementById("remaining").innerText =
+    "Cards Remaining: " + remainingCards.length;
+
+}
 
 function drawCard() {
 
   if (remainingCards.length === 0) {
 
-    alert("Deck reshuffled!");
+    alert("Deck complete! Reshuffling...");
 
     remainingCards = [...cards];
+
   }
 
-  const index =
+  const randomIndex =
     Math.floor(Math.random() * remainingCards.length);
 
-  const random =
-    remainingCards.splice(index, 1)[0];
+  const card =
+    remainingCards.splice(randomIndex, 1)[0];
 
   document.getElementById("type").innerText =
-    random.type;
+    card.type;
 
   document.getElementById("task").innerText =
-    random.task;
+    card.task;
 
-  document.getElementById("remaining").innerText =
-    "Cards Remaining: " + remainingCards.length;
+  updateRemainingCount();
+
 }
 
 </script>
