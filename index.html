@@ -64,34 +64,50 @@ Press Draw Card
 <script>
 
 let cards = [];
+let remainingCards = [];
 
 const API_URL = "https://script.google.com/macros/s/AKfycbyChplToswSaLr6B4te3228by7JS-7Ek9DOMri7Bl9c0SVbRyyhVjG_KZLpXjH0aSpc/exec";
 
 fetch(API_URL)
   .then(r => r.json())
   .then(data => {
+
     cards = data;
+    remainingCards = [...cards];
+
+    document.getElementById("remaining").innerText =
+      "Cards Remaining: " + remainingCards.length;
+
     console.log("Loaded", cards.length, "cards");
+
   })
   .catch(err => {
-    console.error(err);
+    console.error("Failed to load cards:", err);
   });
 
 function drawCard() {
 
-  if (cards.length === 0) {
-    alert("No cards loaded yet");
-    return;
+  if (remainingCards.length === 0) {
+
+    alert("Deck reshuffled!");
+
+    remainingCards = [...cards];
   }
 
+  const index =
+    Math.floor(Math.random() * remainingCards.length);
+
   const random =
-    cards[Math.floor(Math.random() * cards.length)];
+    remainingCards.splice(index, 1)[0];
 
   document.getElementById("type").innerText =
     random.type;
 
   document.getElementById("task").innerText =
     random.task;
+
+  document.getElementById("remaining").innerText =
+    "Cards Remaining: " + remainingCards.length;
 }
 
 </script>
