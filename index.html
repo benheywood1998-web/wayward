@@ -70,23 +70,28 @@ const API_URL = "https://script.google.com/macros/s/AKfycbyChplToswSaLr6B4te3228
 fetch(API_URL)
   .then(r => r.json())
   .then(data => {
-      cards = data;
+    cards = data;
+    console.log("Loaded", cards.length, "cards");
+  })
+  .catch(err => {
+    console.error(err);
   });
 
-function drawCard(){
+function drawCard() {
 
-  if(cards.length === 0){
+  if (cards.length === 0) {
+    alert("No cards loaded yet");
     return;
   }
 
   const random =
-    cards[Math.floor(Math.random()*cards.length)];
+    cards[Math.floor(Math.random() * cards.length)];
 
-  document.getElementById("type")
-    .innerText = random.type;
+  document.getElementById("type").innerText =
+    random.type;
 
-  document.getElementById("task")
-    .innerText = random.task;
+  document.getElementById("task").innerText =
+    random.task;
 }
 
 </script>
