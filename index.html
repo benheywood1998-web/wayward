@@ -7,59 +7,107 @@
 
 <style>
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
+
+*{
+  box-sizing:border-box;
+}
+
 body{
-  font-family: Arial, sans-serif;
-  text-align:center;
-  padding:30px;
-  background:#111;
+  font-family:'Inter', sans-serif;
+  background:#0f1115;
   color:white;
-  max-width:800px;
-  margin:auto;
+  text-align:center;
+  margin:0;
+  padding:30px 20px 50px;
 }
 
 h1{
-  margin-bottom:10px;
+  font-size:48px;
+  font-weight:800;
+  margin:0;
+  letter-spacing:-2px;
 }
 
 .subtitle{
-  margin-top:0;
-  margin-bottom:30px;
-  opacity:0.8;
-  font-style:italic;
+  margin-top:8px;
+  margin-bottom:40px;
+  color:#9aa4b2;
+  font-size:15px;
 }
 
 button{
-  padding:15px 30px;
-  font-size:20px;
+  background:white;
+  color:black;
   border:none;
-  border-radius:10px;
+  border-radius:16px;
+  padding:16px 32px;
+  font-size:18px;
+  font-weight:700;
   cursor:pointer;
+  transition:0.2s;
 }
 
-#remaining{
-  margin-top:20px;
-  margin-bottom:20px;
-  font-size:18px;
-  opacity:0.8;
+button:hover{
+  transform:translateY(-2px);
 }
 
 .card{
-  margin-top:20px;
-  padding:30px;
-  border-radius:20px;
-  background:#222;
-  min-height:200px;
+  max-width:700px;
+  margin:30px auto 15px;
+  border-radius:28px;
+  padding:35px;
+  min-height:320px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.25);
+}
+
+.group{
+  background:#7c3aed;
+}
+
+.individual{
+  background:#0f766e;
+}
+
+.secret{
+  background:#ea580c;
 }
 
 .type{
-  font-size:30px;
-  margin-bottom:20px;
-  font-weight:bold;
+  font-size:15px;
+  font-weight:800;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  opacity:0.9;
+}
+
+.instructions{
+  margin-top:8px;
+  font-size:14px;
+  opacity:0.85;
 }
 
 .task{
-  font-size:24px;
-  line-height:1.4;
+  font-size:34px;
+  font-weight:800;
+  line-height:1.25;
+  margin-top:30px;
+}
+
+#remaining{
+  font-size:13px;
+  color:#8b949e;
+  margin-top:10px;
+}
+
+.placeholder{
+  color:#d1d5db;
 }
 
 </style>
@@ -77,18 +125,20 @@ A silly game for silly people and Ben
 Draw Card
 </button>
 
-<p id="remaining">
-Loading cards...
-</p>
-
-<div class="card">
+<div id="card" class="card">
 
   <div id="type" class="type"></div>
 
-  <div id="task" class="task">
+  <div id="instructions" class="instructions"></div>
+
+  <div id="task" class="task placeholder">
     Press Draw Card
   </div>
 
+</div>
+
+<div id="remaining">
+Loading cards...
 </div>
 
 <script>
@@ -107,8 +157,6 @@ fetch(API_URL)
 
     updateRemainingCount();
 
-    console.log("Loaded", cards.length, "cards");
-
   })
   .catch(error => {
 
@@ -122,7 +170,7 @@ fetch(API_URL)
 function updateRemainingCount() {
 
   document.getElementById("remaining").innerText =
-    "Cards Remaining: " + remainingCards.length;
+    remainingCards.length + " cards remaining";
 
 }
 
@@ -142,11 +190,60 @@ function drawCard() {
   const card =
     remainingCards.splice(randomIndex, 1)[0];
 
-  document.getElementById("type").innerText =
-    card.type;
+  const cardElement =
+    document.getElementById("card");
+
+  cardElement.classList.remove(
+    "group",
+    "individual",
+    "secret"
+  );
+
+  const type =
+    card.type.toLowerCase();
+
+  if (type.includes("group")) {
+
+    cardElement.classList.add("group");
+
+    document.getElementById("type").innerText =
+      "GROUP RULE";
+
+    document.getElementById("instructions").innerText =
+      "Read this card out loud";
+
+  }
+
+  else if (type.includes("secret")) {
+
+    cardElement.classList.add("secret");
+
+    document.getElementById("type").innerText =
+      "SECRET RULE";
+
+    document.getElementById("instructions").innerText =
+      "Keep this to yourself";
+
+  }
+
+  else {
+
+    cardElement.classList.add("individual");
+
+    document.getElementById("type").innerText =
+      "INDIVIDUAL RULE";
+
+    document.getElementById("instructions").innerText =
+      "Read this card out loud";
+
+  }
 
   document.getElementById("task").innerText =
     card.task;
+
+  document.getElementById("task").classList.remove(
+    "placeholder"
+  );
 
   updateRemainingCount();
 
